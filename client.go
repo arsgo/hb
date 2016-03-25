@@ -9,8 +9,7 @@ import (
 	"sort"
 	"strings"
 	"time"
-
-	"github.com/yanglei16/lib4go/utility"
+	"github.com/colinyl/lib4go/utility"
 )
 
 type response struct {
