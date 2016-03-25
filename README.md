@@ -1,5 +1,5 @@
 # http bench
-        go get -u -v github.com/lib4go/hb
+        go get -u -v github.com/colinyl/hb
         
 ###参数说明
  -n int       总请求个数
