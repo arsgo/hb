@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	"github.com/lib4go/lib4go/logger"
+	"github.com/yanglei16/lib4go/logger"
 )
 
 var log *logger.Logger

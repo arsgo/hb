@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lib4go/lib4go/utility"
+	"github.com/yanglei16/lib4go/utility"
 )
 
 type response struct {
