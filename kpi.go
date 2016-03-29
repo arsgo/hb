@@ -17,23 +17,13 @@ type requestKPI struct {
 func calculateKPI(finishResponse []*response, totalMillisecond int) {
 
 	kpi := requestKPI{}
-	urlKPI := make(map[string]*requestKPI)
-	for _, r := range finishResponse {
-		if _, ok := urlKPI[r.url]; !ok {
-			urlKPI[r.url] = &requestKPI{}
-		}
-		currentURLKpi := urlKPI[r.url]
+	for _, r := range finishResponse {		
 		kpi.totalSpanTime += r.useTime
 		kpi.requestCount++
-
-		currentURLKpi.totalSpanTime += r.useTime
-		currentURLKpi.requestCount++
 		if r.success {
-			kpi.successCount++
-			currentURLKpi.successCount++
+			kpi.successCount++		
 		} else {
-			kpi.failedCount++
-			currentURLKpi.failedCount++
+			kpi.failedCount++		
 		}
 	}
 	kpi.argSpendTime = float32(kpi.totalSpanTime) / float32(kpi.requestCount)
