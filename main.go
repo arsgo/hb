@@ -8,7 +8,7 @@ import (
 var log *logger.Logger
 
 func init() {
-	log, _ = logger.New("hb")
+	log, _ = logger.New("hb",true)
 }
 
 //批量下单，指定进程数，创建指定进程的程序，并批量进行下单请求
