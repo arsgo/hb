@@ -12,12 +12,7 @@ import (
 	"github.com/colinyl/lib4go/utility"
 )
 
-type response struct {
-	success bool
-	useTime int
-	url     string
-	index   int
-}
+
 type responseXML struct {
 	FailedCode   string `xml:"failedCode"`
 	FailedReason string `xml:"failedReason"`

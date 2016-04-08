@@ -7,8 +7,20 @@ import (
 	"time"
 )
 
+type response struct {
+	success bool
+	useTime int
+	url     string
+	index   int
+}
+
+type client interface {
+	RunNow(int) *response
+	GetLen() int
+}
+
 type process struct {
-	clients      *HttpClients
+	clients      client
 	startChan    chan int
 	finishChan   chan *response
 	totalRequest int
@@ -77,7 +89,7 @@ loop:
 					time.Sleep(time.Duration(time.Millisecond * time.Duration(p.sleep)))
 				}
 				if len(finishResponse)+p.concurrent-1 < p.totalRequest {
-					p.startChan <- len(finishResponse) % len(p.clients.clients)
+					p.startChan <- len(finishResponse) % p.clients.GetLen()
 					p.run(p.startChan, p.finishChan)
 				}
 			}
@@ -106,5 +118,5 @@ func (p *process) run(startNotify chan int, finishNotify chan *response) {
 		}
 	}()
 	index := <-startNotify
-	finishNotify <- p.clients.HttpGet(index)
+	finishNotify <- p.clients.RunNow(index)
 }
