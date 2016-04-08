@@ -101,7 +101,7 @@ func isSuccess(content []byte) bool {
 func subTime(startTime time.Time, endTime time.Time) int {
 	return int(endTime.Sub(startTime).Nanoseconds() / 1000 / 1000)
 }
-func getDatamap() utility.DataMap {
+func getDatamap() *utility.DataMap {
 	baseData := utility.NewDataMap()
 	baseData.Set("guid", utility.GetGUID())
 	baseData.Set("timestamp", time.Now().Format("20060102150405"))
