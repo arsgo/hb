@@ -8,9 +8,13 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"sync/atomic"
 	"time"
+
 	"github.com/colinyl/lib4go/utility"
 )
+
+var minSEQValue uint64 = 100000
 
 type response struct {
 	success bool
@@ -33,8 +37,8 @@ func NewHttpClient(data *dataBlock) *httpClient {
 }
 
 func (c *httpClient) Reqeust() *response {
-    defer func() {
-		if err := recover();nil!=err {
+	defer func() {
+		if err := recover(); nil != err {
 			log.Fatal(err.(error).Error())
 		}
 	}()
@@ -52,25 +56,25 @@ func (c *httpClient) Reqeust() *response {
 		url: c.data.URL, useTime: subTime(startTime, endTime)}
 }
 
-
 func (h *httpClient) makeParams() string {
 	var (
 		rawFormat string
 		keys      []string
 	)
-	for k := range h.data.Params {		
+	for k := range h.data.Params {
 		if strings.HasPrefix(k, "$") {
 			rawFormat = h.data.Params[k]
 			continue
 		} else {
-		keys = append(keys, k)
+			keys = append(keys, k)
 		}
-		
+
 	}
 	sort.Sort(sort.StringSlice(keys))
 	var keyValues []string
 	var urlParams []string
-   nmap := getDatamap()
+	nmap := getDatamap()
+	fullParamsMap := utility.NewDataMap()
 	for _, k := range keys {
 		var value string
 		if v1, ok := h.data.Params[k]; ok {
@@ -78,12 +82,13 @@ func (h *httpClient) makeParams() string {
 		} else {
 			continue
 		}
+		fullParamsMap.Set(k, value)
 		keyValues = append(keyValues, k+value)
 		urlParams = append(urlParams, k+"="+value)
-	}	
-	dataMap := getDatamap()
-	dataMap.Set("raw", strings.Join(keyValues, ""))
-	fullRaw := strings.Replace(dataMap.Translate(rawFormat), " ", "", 10)
+	}
+
+	fullParamsMap.Set("raw", strings.Join(keyValues, ""))
+	fullRaw := strings.Replace(fullParamsMap.Translate(rawFormat), " ", "", -1)
 	//log.Debug(fullRaw)
 	urlParams = append(urlParams, "sign="+utility.Md5(fullRaw))
 	return strings.Join(urlParams, "&")
@@ -104,6 +109,7 @@ func subTime(startTime time.Time, endTime time.Time) int {
 func getDatamap() *utility.DataMap {
 	baseData := utility.NewDataMap()
 	baseData.Set("guid", utility.GetGUID())
+	baseData.Set("seq", fmt.Sprintf("%d",atomic.AddUint64(&minSEQValue, 1)))
 	baseData.Set("timestamp", time.Now().Format("20060102150405"))
 	return baseData
 }
