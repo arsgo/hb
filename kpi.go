@@ -17,13 +17,13 @@ type requestKPI struct {
 func calculateKPI(finishResponse []*response, totalMillisecond int) {
 
 	kpi := requestKPI{}
-	for _, r := range finishResponse {		
+	for _, r := range finishResponse {
 		kpi.totalSpanTime += r.useTime
 		kpi.requestCount++
 		if r.success {
-			kpi.successCount++		
+			kpi.successCount++
 		} else {
-			kpi.failedCount++		
+			kpi.failedCount++
 		}
 	}
 	kpi.argSpendTime = float32(kpi.totalSpanTime) / float32(kpi.requestCount)

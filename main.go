@@ -38,9 +38,6 @@ func main() {
 	if !s {
 		return
 	}
-
-	response, totalMillisecond := p.Start()
-
-	calculateKPI(response, totalMillisecond)
+	calculateKPI(p.Start())
 
 }

@@ -6,14 +6,14 @@ import (
 	"strings"
 	"time"
 )
-
+/*
 type response struct {
 	success bool
 	useTime int
 	url     string
 	index   int
 }
-
+*/
 type client interface {
 	RunNow(int) *response
 	GetLen() int
