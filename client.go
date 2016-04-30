@@ -14,7 +14,6 @@ import (
 	"github.com/colinyl/lib4go/utility"
 )
 
-
 var minSEQValue uint64 = 100000
 
 type response struct {
@@ -59,6 +58,9 @@ func (c *httpClient) Reqeust() *response {
 }
 
 func (h *httpClient) makeParams() string {
+	if h.data.Params == nil || len(h.data.Params) == 0 {
+		return ""
+	}
 	var (
 		rawFormat string
 		keys      []string
@@ -111,7 +113,7 @@ func subTime(startTime time.Time, endTime time.Time) int {
 func getDatamap() *utility.DataMap {
 	baseData := utility.NewDataMap()
 	baseData.Set("guid", utility.GetGUID())
-	baseData.Set("seq", fmt.Sprintf("%d",atomic.AddUint64(&minSEQValue, 1)))
+	baseData.Set("seq", fmt.Sprintf("%d", atomic.AddUint64(&minSEQValue, 1)))
 	baseData.Set("timestamp", time.Now().Format("20060102150405"))
 	return baseData
 }
