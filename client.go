@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
@@ -24,8 +25,15 @@ type response struct {
 }
 
 type responseXML struct {
+	Code         string `xml:"result > code"`
 	FailedCode   string `xml:"failedCode"`
 	FailedReason string `xml:"failedReason"`
+}
+type resultJson struct {
+	Code string `json:"code"`
+}
+type responseJson struct {
+	Result resultJson `json:"result"`
 }
 
 type httpClient struct {
@@ -102,9 +110,22 @@ func isSuccess(content []byte) bool {
 	if len(content) == 0 {
 		return false
 	}
-	o := responseXML{}
-	xml.Unmarshal(content, &o)
-	return strings.EqualFold(o.FailedCode, "000")
+	if strings.HasPrefix(string(content), "<") {
+		o := responseXML{}
+		err := xml.Unmarshal(content, &o)
+		if err != nil {
+			return false
+		}
+		return strings.EqualFold(o.FailedCode, "000") ||
+			strings.EqualFold(o.Code, "success")
+	} else {
+		o := responseJson{}
+		err := json.Unmarshal(content, &o)
+		if err != nil {
+			return false
+		}
+		return strings.EqualFold(o.Result.Code, "success")
+	}
 }
 
 func subTime(startTime time.Time, endTime time.Time) int {
