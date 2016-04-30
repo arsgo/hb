@@ -21,11 +21,14 @@ func NewHttpClients(count int, blocks []*dataBlock) *HttpClients {
 	return c
 }
 
-func (c *HttpClients) HttpGet(i int) *response {
+func (c *HttpClients) RunNow(i int) *response {
 	if i > len(c.clients)-1 {
 		fmt.Printf("索引错误:%d\r\n", i)
 		os.Exit(1)
 	}
 	client := c.clients[i]
 	return client.Reqeust()
+}
+func (c *HttpClients) GetLen() int {
+	return len(c.clients)
 }

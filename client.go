@@ -14,6 +14,7 @@ import (
 	"github.com/colinyl/lib4go/utility"
 )
 
+<<<<<<< HEAD
 var minSEQValue uint64 = 100000
 
 type response struct {
@@ -22,6 +23,9 @@ type response struct {
 	url     string
 	index   int
 }
+=======
+
+>>>>>>> a3040e816ce241b194c05f2bac4cad239bb5b008
 type responseXML struct {
 	FailedCode   string `xml:"failedCode"`
 	FailedReason string `xml:"failedReason"`
