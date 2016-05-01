@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 )
+
 /*
 type response struct {
 	success bool
@@ -37,7 +38,7 @@ func NewProcesss(totalRequest int, concurrent int, configPath string,
 	p := &process{totalRequest: totalRequest, concurrent: concurrent,
 		configPath: configPath, requestURL: requestURL, timeout: timeout, sleep: sleep, dataBlocks: dataBlocks}
 	p.startChan = make(chan int, concurrent)
-	p.finishChan = make(chan *response, totalRequest)
+	p.finishChan = make(chan *response, concurrent)
 	return p.init(), p
 }
 
@@ -56,7 +57,7 @@ func (p *process) init() bool {
 	//创建http clients
 	p.clients = NewHttpClients(p.concurrent, p.dataBlocks)
 
-	for i := 0; i < p.concurrent && i < p.totalRequest; i++ {
+	for i := 0; i < p.concurrent && ((p.totalRequest > 0 && i < p.totalRequest) || p.totalRequest == 0); i++ {
 		go p.run(p.startChan, p.finishChan)
 	}
 	return true
@@ -86,9 +87,9 @@ loop:
 					break loop
 				}
 				if p.sleep > 0 {
-					time.Sleep(time.Duration(time.Millisecond * time.Duration(p.sleep)))
+					time.Sleep(time.Millisecond * time.Duration(p.sleep))
 				}
-				if len(finishResponse)+p.concurrent-1 < p.totalRequest {
+				if len(finishResponse)+p.concurrent-1 < p.totalRequest || p.totalRequest == 0 {				
 					p.startChan <- len(finishResponse) % p.clients.GetLen()
 					p.run(p.startChan, p.finishChan)
 				}
