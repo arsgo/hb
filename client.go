@@ -130,6 +130,7 @@ func getDatamap() utility.DataMap {
 	baseData.Set("seq", fmt.Sprintf("%d", atomic.AddUint64(&minSEQValue, 1)))
 	baseData.Set("timestamp", time.Now().Format("20060102150405"))
 	baseData.Set("unixtime",fmt.Sprintf("%d",time.Now().Unix()))
+	baseData.Set("uxmillisecond",fmt.Sprintf("%d",time.Now().Unix()*1000))
 	return baseData
 }
 
