@@ -9,6 +9,22 @@
             "rechargeAccount": "",
             "notifyUrl": "http://192.168.101.139:9999/t/order/notify",
             "timestamp": "@timestamp",
+            "$": "38b8b230cbab4459987073990089c8ae{@raw}38b8b230cbab4459987073990089c8ae",
+            "->": "data"
+        },
+        "url": "http://192.168.101.139:9999/order/request"
+    },
+    {
+        "params": {
+            "<-": "*",
+            "orderNo": "OR@guid",
+            "coopId": "0",
+            "productStandard": "100",
+            "orderNum": "1",
+            "totalStandard": "100",
+            "rechargeAccount": "",
+            "notifyUrl": "http://192.168.101.139:9999/t/order/notify",
+            "timestamp": "@timestamp",
             "$": "38b8b230cbab4459987073990089c8ae{@raw}38b8b230cbab4459987073990089c8ae"
         },
         "url": "http://192.168.101.139:9999/order/request"

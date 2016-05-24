@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -15,24 +14,6 @@ import (
 )
 
 var minSEQValue uint64 = 100000
-
-type response struct {
-	success bool
-	useTime int
-	url     string
-	index   int
-}
-
-type responseXML struct {
-	FailedCode string `xml:"failedCode"`
-}
-type resultJson struct {
-	Code string `json:"code"`
-}
-type responseJson struct {
-	Result resultJson `json:"result"`
-	Code   string     `json:"code"`
-}
 
 type httpClient struct {
 	client *http.Client
@@ -55,9 +36,9 @@ func (c *httpClient) Reqeust() *response {
 	endTime := time.Now()
 	body, _ := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
-	success := isSuccess(body)
+	success, er := c.ResultChanHanlde(body)
 	if !success {
-		log.Errorf("url:%s,content:%s\r\n", url, string(body))
+		log.Errorf("url:%s,content:%s--%s\r\n", url, string(body), er)
 	}
 	return &response{success: resp.StatusCode == 200 && er == nil && success,
 		url: c.data.URL, useTime: subTime(startTime, endTime)}
@@ -78,12 +59,11 @@ func (h *httpClient) makeParams() string {
 		} else {
 			keys = append(keys, k)
 		}
-
 	}
 	sort.Sort(sort.StringSlice(keys))
 	var keyValues []string
 	var urlParams []string
-	nmap := getDatamap()
+	nmap := h.getDatamap()
 	fullParamsMap := utility.NewDataMap()
 	for _, k := range keys {
 		var value string
@@ -96,41 +76,27 @@ func (h *httpClient) makeParams() string {
 		keyValues = append(keyValues, k+value)
 		urlParams = append(urlParams, k+"="+value)
 	}
-
 	fullParamsMap.Set("raw", strings.Join(keyValues, ""))
 	fullRaw := strings.Replace(fullParamsMap.Translate(rawFormat), " ", "", -1)
-	//log.Debug(fullRaw)
 	urlParams = append(urlParams, "sign="+utility.Md5(fullRaw))
 	return strings.Join(urlParams, "&")
-}
-
-func isSuccess(content []byte) bool {
-	if len(content) == 0 {
-		return false
-	}
-	if strings.HasPrefix(string(content), "<?") {
-		return strings.Contains(string(content), "<failedCode>000</failedCode>")
-	} else {
-		o := responseJson{}
-		err := json.Unmarshal(content, &o)
-		if err != nil {
-			return false
-		}
-		return strings.EqualFold(o.Result.Code, "success") ||
-			strings.EqualFold(o.Code, "success") || strings.EqualFold(o.Code, "100")
-	}
 }
 
 func subTime(startTime time.Time, endTime time.Time) int {
 	return int(endTime.Sub(startTime).Nanoseconds() / 1000 / 1000)
 }
-func getDatamap() utility.DataMap {
-	baseData := utility.NewDataMap()
+func (h *httpClient) getDatamap() utility.DataMap {
+	mp, err := h.getFromChan()
+	if err != nil {
+		log.Error(err)
+	}
+	baseData := utility.NewDataMaps(mp)
 	baseData.Set("guid", utility.GetGUID())
 	baseData.Set("seq", fmt.Sprintf("%d", atomic.AddUint64(&minSEQValue, 1)))
 	baseData.Set("timestamp", time.Now().Format("20060102150405"))
-	baseData.Set("unixtime",fmt.Sprintf("%d",time.Now().Unix()))
-	baseData.Set("uxmillisecond",fmt.Sprintf("%d",time.Now().Unix()*1000))
+	baseData.Set("unixtime", fmt.Sprintf("%d", time.Now().Unix()))
+	baseData.Set("uxmillisecond", fmt.Sprintf("%d", time.Now().Unix()*1000))
+
 	return baseData
 }
 
