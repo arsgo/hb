@@ -2,31 +2,30 @@
     {
         "params": {
             "orderNo": "OR@guid",
-            "coopId": "0",
-            "productStandard": "100",
-            "orderNum": "1",
-            "totalStandard": "100",
-            "rechargeAccount": "",
-            "notifyUrl": "http://192.168.101.139:9999/t/order/notify",
+            "channel_no": "grs",
+            "business_type": "11",
+            "carrier_no": "ZSH",
+            "province_no": "*",
+            "city_no": "*",
+            "face": "100",
+            "discount": "1",
             "timestamp": "@timestamp",
-            "$": "38b8b230cbab4459987073990089c8ae{@raw}38b8b230cbab4459987073990089c8ae",
+            "$": "123456{@raw}123456",
             "->": "data"
         },
-        "url": "http://192.168.101.139:9999/order/request"
+        "url": "http://192.168.101.170:8012/sup/card/get"
     },
     {
         "params": {
             "<-": "*",
-            "orderNo": "OR@guid",
-            "coopId": "0",
-            "productStandard": "100",
-            "orderNum": "1",
-            "totalStandard": "100",
-            "rechargeAccount": "",
-            "notifyUrl": "http://192.168.101.139:9999/t/order/notify",
+            "orderNo": "@sys_order_no",
+            "partner_no": "jyk",
+            "card_result": "0",
+            "succ_face": "100",
+            "error_type": "1",
             "timestamp": "@timestamp",
-            "$": "38b8b230cbab4459987073990089c8ae{@raw}38b8b230cbab4459987073990089c8ae"
+            "$": "123456{@raw}123456"
         },
-        "url": "http://192.168.101.139:9999/order/request"
+        "url": "http://192.168.101.170:8012/sup/card/notify"
     }
 ]

@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"regexp"
 	"sort"
 	"strings"
 	"sync/atomic"
@@ -24,10 +25,11 @@ func NewHttpClient(data *dataBlock) *httpClient {
 	return &httpClient{client: createClient(), data: data}
 }
 
-func (c *httpClient) Reqeust() *response {
+func (c *httpClient) Reqeust()(r *response) {
 	defer func() {
 		if err := recover(); nil != err {
 			log.Fatal(err.(error).Error())
+			r=&response{success: false,url: c.data.URL, useTime: 0}
 		}
 	}()
 	url := fmt.Sprintf("%s?%s", c.data.URL, c.makeParams())
@@ -38,7 +40,11 @@ func (c *httpClient) Reqeust() *response {
 	resp.Body.Close()
 	success, er := c.ResultChanHanlde(body)
 	if !success {
-		log.Errorf("url:%s,content:%s--%s\r\n", url, string(body), er)
+		log.Errorf("%s\n%s\n", url, string(body))
+		
+	}
+	if er!=nil{
+		log.Error(er)
 	}
 	return &response{success: resp.StatusCode == 200 && er == nil && success,
 		url: c.data.URL, useTime: subTime(startTime, endTime)}
@@ -57,7 +63,12 @@ func (h *httpClient) makeParams() string {
 			rawFormat = h.data.Params[k]
 			continue
 		} else {
-			keys = append(keys, k)
+			reg := regexp.MustCompile(`^[a-zA-Z]$`)
+			var buffer []byte
+			buffer = append(buffer, k[0])
+			if reg.Match(buffer) {
+				keys = append(keys, k)
+			}
 		}
 	}
 	sort.Sort(sort.StringSlice(keys))
@@ -88,7 +99,7 @@ func subTime(startTime time.Time, endTime time.Time) int {
 func (h *httpClient) getDatamap() utility.DataMap {
 	mp, err := h.getFromChan()
 	if err != nil {
-		log.Error(err)
+		panic(err)
 	}
 	baseData := utility.NewDataMaps(mp)
 	baseData.Set("guid", utility.GetGUID())
@@ -96,7 +107,6 @@ func (h *httpClient) getDatamap() utility.DataMap {
 	baseData.Set("timestamp", time.Now().Format("20060102150405"))
 	baseData.Set("unixtime", fmt.Sprintf("%d", time.Now().Unix()))
 	baseData.Set("uxmillisecond", fmt.Sprintf("%d", time.Now().Unix()*1000))
-
 	return baseData
 }
 

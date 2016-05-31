@@ -33,25 +33,36 @@ func (c *httpClient) ResultChanHanlde(content []byte) (b bool, err error) {
 	}
 	fields := c.data.Params["->"]
 	if fields != "*" {
-		data := input[fields].(map[string]interface{})
-		paramsChan <- data
+		if input[fields] != nil {
+			data := input[fields].(map[string]interface{})
+			paramsChan <- data
+		} else {
+			paramsChan <- nil
+		}
+
 	} else {
 		paramsChan <- input
 	}
 	return
 }
 
-func (c *httpClient) getFromChan() (r map[string]interface{}, er error) {
+func (c *httpClient) getFromChan() (r map[string]interface{}, err error) {
 	if !strings.EqualFold(c.data.Params["<-"], "*") {
 		r = make(map[string]interface{})
 		return
 	}
-	ticker := time.NewTicker(time.Second * 10)
+	ticker := time.NewTicker(time.Second * 2)
 	select {
 	case r = <-paramsChan:
+		{
+			if r==nil{
+				err = errors.New("last request error")
+			}
+			return
+		}
 	case <-ticker.C:
 		{
-			er = errors.New("get data timeout")
+			err = errors.New("get data from chan timeout")
 			r = make(map[string]interface{})
 			return
 		}
