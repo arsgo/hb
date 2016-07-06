@@ -11,6 +11,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/colinyl/lib4go/security/md5"
 	"github.com/colinyl/lib4go/utility"
 )
 
@@ -27,7 +28,7 @@ func NewHttpClient(data *dataBlock) *httpClient {
 
 func (c *httpClient) Reqeust() (r *response) {
 	defer func() {
-		if err := recover(); nil != err && err.(error)!=nil {
+		if err := recover(); nil != err && err.(error) != nil {
 			log.Fatal(err.(error).Error())
 			r = &response{success: false, url: c.data.URL, useTime: 0}
 		}
@@ -89,7 +90,7 @@ func (h *httpClient) makeParams() string {
 	}
 	fullParamsMap.Set("raw", strings.Join(keyValues, ""))
 	fullRaw := strings.Replace(fullParamsMap.Translate(rawFormat), " ", "", -1)
-	urlParams = append(urlParams, "sign="+utility.Md5(fullRaw))
+	urlParams = append(urlParams, "sign="+md5.Encrypt(fullRaw))
 	return strings.Join(urlParams, "&")
 }
 
