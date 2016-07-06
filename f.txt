@@ -1,0 +1,6 @@
+{"card_discount":"0.91","card_id":"476881","card_no":"10407162","card_pwd":"10184555","sys_order_no":"20160524091059100081"}
+{"card_discount":"0.91","card_id":"476882","card_no":"10407162","card_pwd":"10184555","sys_order_no":"20160524091059100081"}
+{"card_discount":"0.91","card_id":"476883","card_no":"10407162","card_pwd":"10184555","sys_order_no":"20160524091059100081"}
+{"card_discount":"0.91","card_id":"476884","card_no":"10407162","card_pwd":"10184555","sys_order_no":"20160524091059100081"}
+{"card_discount":"0.91","card_id":"476885","card_no":"10407162","card_pwd":"10184555","sys_order_no":"20160524091059100081"}
+{"card_discount":"0.91","card_id":"476886","card_no":"10407162","card_pwd":"10184555","sys_order_no":"20160524091059100081"}

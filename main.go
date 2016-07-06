@@ -5,10 +5,9 @@ import (
 	"github.com/colinyl/lib4go/logger"
 )
 
-var log *logger.Logger
-
+var log logger.ILogger
 func init() {
-	log, _ = logger.New("hb",true)
+	log, _ = logger.Get("hb",true)
 }
 
 //批量下单，指定进程数，创建指定进程的程序，并批量进行下单请求

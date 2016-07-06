@@ -25,11 +25,11 @@ func NewHttpClient(data *dataBlock) *httpClient {
 	return &httpClient{client: createClient(), data: data}
 }
 
-func (c *httpClient) Reqeust()(r *response) {
+func (c *httpClient) Reqeust() (r *response) {
 	defer func() {
-		if err := recover(); nil != err {
+		if err := recover(); nil != err && err.(error)!=nil {
 			log.Fatal(err.(error).Error())
-			r=&response{success: false,url: c.data.URL, useTime: 0}
+			r = &response{success: false, url: c.data.URL, useTime: 0}
 		}
 	}()
 	url := fmt.Sprintf("%s?%s", c.data.URL, c.makeParams())
@@ -41,9 +41,9 @@ func (c *httpClient) Reqeust()(r *response) {
 	success, er := c.ResultChanHanlde(body)
 	if !success {
 		log.Errorf("%s\n%s\n", url, string(body))
-		
+
 	}
-	if er!=nil{
+	if er != nil {
 		log.Error(er)
 	}
 	return &response{success: resp.StatusCode == 200 && er == nil && success,

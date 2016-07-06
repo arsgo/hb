@@ -15,7 +15,6 @@ type requestKPI struct {
 }
 
 func calculateKPI(finishResponse []*response, totalMillisecond int) {
-
 	kpi := requestKPI{}
 	for _, r := range finishResponse {
 		kpi.totalSpanTime += r.useTime
@@ -32,7 +31,7 @@ func calculateKPI(finishResponse []*response, totalMillisecond int) {
 
 	fmt.Println()
 	fmt.Println("-------------------------------------------------------------------------")
-	fmt.Println("总数\t成功\t平均耗时\t每秒请求数")
+	fmt.Println("总数\t成功\t响应时长(ms)\tQPS")
 	fmt.Printf("%d\t%d\t%.2f\t\t%.2f\r\n",
 		kpi.requestCount, kpi.successCount,
 		kpi.argSpendTime, kpi.requestPerSecond)

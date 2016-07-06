@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -25,11 +26,14 @@ func (c *httpClient) ResultChanHanlde(content []byte) (b bool, err error) {
 	input := make(map[string]interface{})
 	if strings.HasPrefix(string(content), "<?") {
 		err = xml.Unmarshal(content, &input)
-	} else {
+	} else if strings.HasPrefix(string(content), "{") || strings.HasPrefix(string(content), "[") {
 		err = json.Unmarshal(content, &input)
+	} else {
+		err = fmt.Errorf("未知的格式：%s", string(content))
 	}
 	if err != nil {
-		return
+		err = fmt.Errorf("解决JSON失败%s,%s",err.Error(),string(content))
+		return 
 	}
 	fields := c.data.Params["->"]
 	if fields != "*" {
@@ -55,7 +59,7 @@ func (c *httpClient) getFromChan() (r map[string]interface{}, err error) {
 	select {
 	case r = <-paramsChan:
 		{
-			if r==nil{
+			if r == nil {
 				err = errors.New("last request error")
 			}
 			return
